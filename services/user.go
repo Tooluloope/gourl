@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Tooluloope/gourl/models"
 )
@@ -15,8 +14,6 @@ func (service *Service) AuthenticateUser(ctx context.Context, email, password st
 		return "", err
 	}
 
-	fmt.Println(user)
-	fmt.Println(password)
 	if err := user.CheckPassword(password); err != nil {
 		return "", err
 	}
