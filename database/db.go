@@ -23,9 +23,15 @@ func NewDatabase() (*Database, error) {
 		os.Getenv("SSL_MODE"),
 	)
 
-	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{TranslateError: true})
 
 	if err != nil {
+		return &Database{}, fmt.Errorf("error opening db connection: %w", err)
+	}
+
+	result := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
+
+	if result.Error != nil {
 		return &Database{}, fmt.Errorf("error opening db connection: %w", err)
 	}
 

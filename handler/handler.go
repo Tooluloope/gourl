@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Tooluloope/gourl/middleware"
 	"github.com/Tooluloope/gourl/services"
 	"github.com/gorilla/mux"
 )
@@ -27,6 +28,7 @@ func NewHandler(service *services.Service) *Handler {
 	}
 	handler.Router = mux.NewRouter()
 	handler.mapRoutes()
+	handler.Router.Use(middleware.JSONMiddleware)
 	port := os.Getenv("PORT")
 	handler.Server = &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),

@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Tooluloope/gourl/models"
 )
@@ -11,9 +10,12 @@ func (service *Service) AuthenticateUser(ctx context.Context, username, password
 	return models.User{}, nil
 }
 
-func (service *Service) RegisterUser(ctx context.Context, user models.User) error {
-	fmt.Println("RegisterUser Service")
+func (service *Service) RegisterUser(ctx context.Context, user models.User) (models.User, error) {
 
-	service.store.RegisterUser(ctx, user)
-	return nil
+	user, err := service.store.RegisterUser(ctx, user)
+
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
 }
