@@ -6,6 +6,8 @@ import (
 
 func (handler *Handler) CreateURL(w http.ResponseWriter, r *http.Request) {
 
+	w.Write([]byte("Create URL"))
+
 }
 
 func (handler *Handler) GetURLByShortCode(w http.ResponseWriter, r *http.Request) {

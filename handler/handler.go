@@ -41,11 +41,11 @@ func NewHandler(service *services.Service) *Handler {
 func (handler *Handler) mapRoutes() {
 	handler.Router.HandleFunc("/api/v1/createuser", handler.RegisterUser).Methods("POST")
 	handler.Router.HandleFunc("/api/v1/login", handler.AuthenticateUser).Methods("POST")
-	handler.Router.HandleFunc("/api/v1/createurl", handler.CreateURL).Methods("POST")
-	handler.Router.HandleFunc("/api/v1/geturl", handler.GetURLByShortCode).Methods("GET")
-	handler.Router.HandleFunc("/api/v1/getallurls", handler.GetAllURLs).Methods("GET")
-	handler.Router.HandleFunc("/api/v1/deleteurl", handler.DeleteURL).Methods("DELETE")
-	handler.Router.HandleFunc("/api/v1/updateurl", handler.UpdateURL).Methods("PUT")
+	handler.Router.HandleFunc("/api/v1/createurl", middleware.JWTAuth(handler.CreateURL)).Methods("POST")
+	handler.Router.HandleFunc("/api/v1/geturl", middleware.JWTAuth(handler.GetURLByShortCode)).Methods("GET")
+	handler.Router.HandleFunc("/api/v1/getallurls", middleware.JWTAuth(handler.GetAllURLs)).Methods("GET")
+	handler.Router.HandleFunc("/api/v1/deleteurl", middleware.JWTAuth(handler.DeleteURL)).Methods("DELETE")
+	handler.Router.HandleFunc("/api/v1/updateurl", middleware.JWTAuth(handler.UpdateURL)).Methods("PUT")
 }
 
 func (handler *Handler) RunServer() {
