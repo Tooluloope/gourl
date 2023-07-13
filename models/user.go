@@ -1,6 +1,11 @@
 package models
 
 import (
+	"fmt"
+	"os"
+	"time"
+
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -27,7 +32,27 @@ func (user *User) HashPassword() error {
 func (user *User) CheckPassword(providedPassword string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(providedPassword))
 	if err != nil {
-		return err
+		return fmt.Errorf("Invalid email or password")
 	}
 	return nil
+}
+
+func (user *User) GenerateJWT() (string, error) {
+	jwtKey := []byte(os.Getenv("JWT_SECRET"))
+	expirationTime := time.Now().Add(24 * time.Hour)
+
+	claims := &jwt.StandardClaims{
+		// In JWT, the claims contains the user information, which can be verified.
+		Issuer:    user.Email,
+		ExpiresAt: expirationTime.Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }

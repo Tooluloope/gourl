@@ -3,24 +3,32 @@ package database
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/Tooluloope/gourl/models"
 	"gorm.io/gorm"
 )
 
-func (db *Database) AuthenticateUser(ctx context.Context, username, password string) (models.User, error) {
-	return models.User{}, nil
+func (db *Database) AuthenticateUser(ctx context.Context, email string) (models.User, error) {
+
+	user := models.User{
+		Email: email,
+	}
+
+	if result := db.Client.Where("email = ?", email).First(&user); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return models.User{}, errors.New("Invalid email or password")
+		}
+		return models.User{}, result.Error
+	}
+	return user, nil
 }
 
 func (db *Database) RegisterUser(ctx context.Context, user models.User) (models.User, error) {
 
 	result := db.Client.Where("email = ?", user.Email).First(&user)
-	fmt.Println(result)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 
-		fmt.Println("User not found, creating new user")
 		if err := user.HashPassword(); err != nil {
 			return models.User{}, err
 		}

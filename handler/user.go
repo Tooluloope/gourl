@@ -20,6 +20,11 @@ type RegisterUser struct {
 	LastName  string `json:"lastName" validate:"required"`
 }
 
+type LoginUser struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,max=100,min=6"`
+}
+
 func convertToUser(user RegisterUser) models.User {
 	return models.User{
 		Email:     user.Email,
@@ -30,6 +35,27 @@ func convertToUser(user RegisterUser) models.User {
 }
 
 func (handler *Handler) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
+	var user LoginUser
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		utils.WriteJSONError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(user); err != nil {
+		utils.WriteJSONError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	token, err := handler.Service.AuthenticateUser(r.Context(), user.Email, user.Password)
+
+	if err != nil {
+		utils.WriteJSONError(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, token)
 
 }
 
