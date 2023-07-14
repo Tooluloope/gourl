@@ -13,7 +13,7 @@ type Store interface {
 	CreateURL(ctx context.Context, url models.URL) (models.URL, error)
 	GetAllURLs(ctx context.Context) ([]models.URL, error)
 	DeleteURL(ctx context.Context, urlId string) error
-	UpdateURL(ctx context.Context, url models.URL, shortCode string) error
+	UpdateURL(ctx context.Context, url models.URL) (models.URL, error)
 }
 
 type Service struct {

@@ -51,5 +51,12 @@ func (service *Service) DeleteURL(ctx context.Context, urlId string) error {
 }
 
 func (service *Service) UpdateURL(ctx context.Context, url models.URL) (models.URL, error) {
-	return models.URL{}, nil
+
+	url, err := service.store.UpdateURL(ctx, url)
+
+	if err != nil {
+		return models.URL{}, err
+	}
+
+	return url, nil
 }

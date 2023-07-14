@@ -83,7 +83,7 @@ func (db *Database) DeleteURL(ctx context.Context, urlId string) error {
 	}
 
 	if userId != url.UserID {
-		if result := db.Client.Delete(&url); result.Error != nil {
+		if result := db.Client.Unscoped().Delete(&url); result.Error != nil {
 			return result.Error
 		}
 	}
@@ -91,6 +91,20 @@ func (db *Database) DeleteURL(ctx context.Context, urlId string) error {
 	return nil
 }
 
-func (db *Database) UpdateURL(ctx context.Context, url models.URL, shortCode string) error {
-	return nil
+func (db *Database) UpdateURL(ctx context.Context, url models.URL) (models.URL, error) {
+
+	var urlToUpdate models.URL
+	userId := ctx.Value(utils.ContextKeyUser)
+
+	if result := db.Client.Where("id = ? AND user_id = ?", url.ID, userId).First(&urlToUpdate); result.Error != nil {
+		return models.URL{}, result.Error
+	}
+
+	if userId != urlToUpdate.UserID {
+		if result := db.Client.Model(&urlToUpdate).Updates(&url); result.Error != nil {
+			return models.URL{}, result.Error
+		}
+	}
+
+	return urlToUpdate, nil
 }

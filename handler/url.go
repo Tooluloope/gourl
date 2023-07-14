@@ -106,23 +106,53 @@ func (handler *Handler) DeleteURL(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (handler *Handler) UpdateURL(w http.ResponseWriter, r *http.Request) {}
+func (handler *Handler) UpdateURL(w http.ResponseWriter, r *http.Request) {
 
-func (handler *Handler) GetURLByID(w http.ResponseWriter, r *http.Request) {
+	var postURL PostURL
 
-	vars := mux.Vars(r)
-	urlId := vars["id"]
-	if urlId == "" {
-		utils.WriteJSONError(w, http.StatusBadRequest, errors.New("id is required"))
+	// Decode the request body into struct and failed if any error occur
+	if err := json.NewDecoder(r.Body).Decode(&postURL); err != nil {
+		utils.WriteJSONError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	url, err := handler.Service.GetURLByShortCode(r.Context(), urlId)
+	validate := validator.New()
+
+	if err := validate.Struct(postURL); err != nil {
+		utils.WriteJSONError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Create the URL
+	url, err := handler.Service.UpdateURL(
+		r.Context(),
+		convertToURL(postURL),
+	)
 
 	if err != nil {
 		utils.WriteJSONError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, url)
+	utils.WriteJSON(w, http.StatusCreated, url)
+}
+
+func (handler *Handler) RedirectToShortURL(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	shortCode := vars["shortCode"]
+	if shortCode == "" {
+		utils.WriteJSONError(w, http.StatusBadRequest, errors.New("shortCode is required"))
+		// We should redirect to a 404 page
+		return
+	}
+
+	url, err := handler.Service.GetURLByShortCode(r.Context(), shortCode)
+
+	if err != nil {
+		utils.WriteJSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	http.Redirect(w, r, url.OriginalURL, http.StatusMovedPermanently)
 }
