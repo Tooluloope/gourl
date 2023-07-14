@@ -18,7 +18,7 @@ type User struct {
 	Password  string    `json:"-"`
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
-	URLs      []URL     `gorm:"foreignKey:UserID" json:"urls"`
+	URLs      []URL     `gorm:"foreignKey:UserID" json:"-"`
 }
 
 func (user *User) HashPassword() error {
@@ -46,6 +46,7 @@ func (user *User) GenerateJWT() (string, error) {
 		// In JWT, the claims contains the user information, which can be verified.
 		Issuer:    user.Email,
 		ExpiresAt: expirationTime.Unix(),
+		Id:        user.ID.String(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
