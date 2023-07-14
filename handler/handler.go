@@ -44,8 +44,9 @@ func (handler *Handler) mapRoutes() {
 	handler.Router.HandleFunc("/api/v1/createurl", middleware.JWTAuth(handler.CreateURL)).Methods("POST")
 	handler.Router.HandleFunc("/api/v1/geturl", middleware.JWTAuth(handler.GetURLByShortCode)).Methods("GET")
 	handler.Router.HandleFunc("/api/v1/getallurls", middleware.JWTAuth(handler.GetAllURLs)).Methods("GET")
-	handler.Router.HandleFunc("/api/v1/deleteurl", middleware.JWTAuth(handler.DeleteURL)).Methods("DELETE")
+	handler.Router.HandleFunc("/api/v1/deleteurl/{id}", middleware.JWTAuth(handler.DeleteURL)).Methods("DELETE")
 	handler.Router.HandleFunc("/api/v1/updateurl", middleware.JWTAuth(handler.UpdateURL)).Methods("PUT")
+	handler.Router.HandleFunc("/r/{shortCode}", handler.RedirectToShortURL).Methods("GET")
 }
 
 func (handler *Handler) RunServer() {

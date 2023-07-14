@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -30,8 +31,10 @@ func JWTAuth(
 
 		token := bearerToken[1]
 
-		if validateToken(token) {
-			original(w, r)
+		if isValid, userID := validateToken(token); isValid {
+			ctx := context.WithValue(r.Context(), utils.ContextKeyUser, userID)
+
+			original(w, r.WithContext(ctx))
 		} else {
 			utils.WriteJSONError(w, http.StatusUnauthorized, errors.New("User is not authorized"))
 			return
@@ -39,7 +42,7 @@ func JWTAuth(
 	}
 }
 
-func validateToken(token string) bool {
+func validateToken(token string) (bool, string) {
 	var mySigningKey = []byte(os.Getenv("JWT_SECRET"))
 	accessToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); ok != true {
@@ -49,8 +52,13 @@ func validateToken(token string) bool {
 	})
 
 	if err != nil {
-		return false
+		return false, ""
 	}
 
-	return accessToken.Valid
+	if _, ok := accessToken.Claims.(jwt.MapClaims); ok && accessToken.Valid {
+		claims := accessToken.Claims.(jwt.MapClaims)
+		return true, claims["jti"].(string)
+	}
+
+	return accessToken.Valid, ""
 }
