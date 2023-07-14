@@ -12,7 +12,7 @@ type Store interface {
 	GetURLByShortCode(ctx context.Context, shortCode string) (models.URL, error)
 	CreateURL(ctx context.Context, url models.URL) (models.URL, error)
 	GetAllURLs(ctx context.Context) ([]models.URL, error)
-	DeleteURL(ctx context.Context, shortCode string) error
+	DeleteURL(ctx context.Context, urlId string) error
 	UpdateURL(ctx context.Context, url models.URL, shortCode string) error
 }
 

@@ -35,7 +35,7 @@ func (db *Database) CreateURL(ctx context.Context, url models.URL) (models.URL, 
 	url.User = user
 	url.UserID = user.ID
 
-	result := db.Client.Where("short_url = ?", url.ShortURL).First(&url)
+	result := db.Client.Where("short_code = ?", url.ShortCode).First(&url)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 
@@ -49,14 +49,45 @@ func (db *Database) CreateURL(ctx context.Context, url models.URL) (models.URL, 
 }
 
 func (db *Database) GetURLByShortCode(ctx context.Context, shortCode string) (models.URL, error) {
-	return models.URL{}, nil
+
+	url := models.URL{}
+
+	if result := db.Client.Where("short_code = ?", shortCode).First(&url); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return models.URL{}, errors.New("Invalid short code")
+		}
+		return models.URL{}, result.Error
+	}
+
+	return url, nil
 }
 
 func (db *Database) GetAllURLs(ctx context.Context) ([]models.URL, error) {
-	return nil, nil
+
+	var user models.User
+
+	if result := db.Client.Preload("URLs").First(&user, "id = ?", ctx.Value(utils.ContextKeyUser)); result.Error != nil {
+		return []models.URL{}, result.Error
+	}
+
+	return user.URLs, nil
 }
 
-func (db *Database) DeleteURL(ctx context.Context, shortCode string) error {
+func (db *Database) DeleteURL(ctx context.Context, urlId string) error {
+
+	var url models.URL
+	userId := ctx.Value(utils.ContextKeyUser)
+
+	if result := db.Client.Where("id = ? AND user_id = ?", urlId, userId).First(&url); result.Error != nil {
+		return result.Error
+	}
+
+	if userId != url.UserID {
+		if result := db.Client.Delete(&url); result.Error != nil {
+			return result.Error
+		}
+	}
+
 	return nil
 }
 
