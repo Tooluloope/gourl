@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Tooluloope/gourl/middleware"
-	"github.com/Tooluloope/gourl/services"
+	"github.com/Tooluloope/gourl/server/middleware"
+	"github.com/Tooluloope/gourl/server/services"
 	"github.com/gorilla/mux"
 )
 

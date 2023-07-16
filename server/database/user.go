@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Tooluloope/gourl/models"
+	"github.com/Tooluloope/gourl/server/models"
 	"gorm.io/gorm"
 )
 

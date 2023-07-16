@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/Tooluloope/gourl/models"
+	"github.com/Tooluloope/gourl/server/models"
 )
 
 func (service *Service) CreateURL(ctx context.Context, url models.URL) (models.URL, error) {

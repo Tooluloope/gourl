@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Tooluloope/gourl/database"
-	"github.com/Tooluloope/gourl/handler"
-	"github.com/Tooluloope/gourl/services"
+	"github.com/Tooluloope/gourl/server/database"
+	"github.com/Tooluloope/gourl/server/handler"
+	"github.com/Tooluloope/gourl/server/services"
 	"github.com/joho/godotenv"
 )
 

@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Tooluloope/gourl/utils"
+	"github.com/Tooluloope/gourl/server/utils"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 

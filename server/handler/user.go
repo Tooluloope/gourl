@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Tooluloope/gourl/models"
-	"github.com/Tooluloope/gourl/utils"
+	"github.com/Tooluloope/gourl/server/models"
+	"github.com/Tooluloope/gourl/server/utils"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )

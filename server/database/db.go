@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Tooluloope/gourl/models"
+	"github.com/Tooluloope/gourl/server/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
